@@ -1,0 +1,133 @@
+name: trystsol
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: trystsol
+      POSTGRES_PASSWORD: trystsol
+      POSTGRES_DB: trystsol
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trystsol -d trystsol"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:8
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    build: ./apps/api
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://trystsol:trystsol@postgres:5432/trystsol
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - staticfiles:/app/staticfiles
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: ./apps/api
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://trystsol:trystsol@postgres:5432/trystsol
+      REDIS_URL: redis://redis:6379/0
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,api
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+      SIWS_DOMAIN: localhost:3000
+      SIWS_URI: http://localhost:3000
+    ports:
+      - "8000:8000"
+    volumes:
+      - staticfiles:/app/staticfiles
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/api/health/ >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  worker:
+    build: ./apps/api
+    command: ["celery", "-A", "config", "worker", "-l", "info", "--concurrency", "2"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://trystsol:trystsol@postgres:5432/trystsol
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  beat:
+    build: ./apps/api
+    command:
+      ["celery", "-A", "config", "beat", "-l", "info", "--schedule", "/tmp/celerybeat-schedule"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://trystsol:trystsol@postgres:5432/trystsol
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+        NEXT_PUBLIC_SOLANA_RPC_URL: https://api.devnet.solana.com
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  indexer:
+    build: ./apps/indexer
+    env_file: .env
+    environment:
+      API_URL: http://api:8000
+      SOLANA_RPC_URL: https://api.devnet.solana.com
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  staticfiles:

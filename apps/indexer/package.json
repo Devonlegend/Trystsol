@@ -1,0 +1,23 @@
+{
+  "name": "@trystsol/indexer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "dev": "tsx src/main.ts",
+    "test": "node --test --import tsx tests/indexer.test.ts",
+    "e2e:devnet": "tsx scripts/e2e-devnet.ts"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.99.0"
+  },
+  "devDependencies": {
+    "@anchor-lang/core": "1.2.2",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.20.0",
+    "tweetnacl": "^1.0.3",
+    "typescript": "^5.9.0"
+  }
+}

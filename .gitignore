@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Rust / Anchor
+target/
+.anchor/
+*.so
+programs/project_registry/target/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.json.key
+keypair*.json
+id.json
+
+# Local data
+.data/
+*.sqlite3
+pgdata/
+logs/
+staticfiles/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
