@@ -371,6 +371,8 @@ def public_project_payload(project: Project, *, include_drafts: bool = False) ->
         "lifecycle_status": project.lifecycle_status,
         "data_origin": project.data_origin,
         "token_mint": project.token_mint,
+        "treasury_wallet": project.treasury_wallet,
+        "treasury_chain": project.treasury_chain,
         "founder": {
             "id": project.founder_id,
             "display_name": project.founder.display_name,

@@ -54,3 +54,20 @@ class TokenMintSerializer(serializers.Serializer):
         except SIWSError as exc:
             raise serializers.ValidationError("Enter a valid base58 Solana mint.") from exc
         return value
+
+
+class ProjectTreasurySerializer(serializers.Serializer):
+    treasury_wallet = serializers.CharField(allow_blank=True, max_length=44)
+    treasury_chain = serializers.ChoiceField(choices=["devnet", "mainnet"], default="devnet")
+
+    def validate_treasury_wallet(self, value):
+        if not value:
+            return value
+        from apps.accounts.siws import SIWSError, b58decode
+
+        try:
+            if len(b58decode(value)) != 32:
+                raise SIWSError("Address is not 32 bytes.")
+        except SIWSError as exc:
+            raise serializers.ValidationError("Enter a valid base58 Solana address.") from exc
+        return value

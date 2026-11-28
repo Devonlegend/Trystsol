@@ -32,6 +32,7 @@ env = environ.Env(
     GITHUB_CACHE_TTL=(int, 900),
     RPC_FACT_CACHE_TTL=(int, 300),
     MAINNET_RPC_URL=(str, "https://api.mainnet-beta.solana.com"),
+    TREASURY_CACHE_TTL=(int, 60),
 )
 
 environ.Env.read_env(ROOT_DIR / ".env")
@@ -197,6 +198,7 @@ JUPITER_CACHE_TTL = env("JUPITER_CACHE_TTL")
 GITHUB_CACHE_TTL = env("GITHUB_CACHE_TTL")
 RPC_FACT_CACHE_TTL = env("RPC_FACT_CACHE_TTL")
 MAINNET_RPC_URL = env("MAINNET_RPC_URL")
+TREASURY_CACHE_TTL = env("TREASURY_CACHE_TTL")
 
 LOGGING = {
     "version": 1,

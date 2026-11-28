@@ -67,6 +67,8 @@ interface ManagedProject {
   data_origin: string;
   chain: { pda: string; signature: string; slot: number | null; lifecycle_status: string };
   token_mint: string;
+  treasury_wallet: string;
+  treasury_chain: "devnet" | "mainnet";
   progress: { verified: number; total: number; percentage: number; basis: string };
   roadmaps: { id: string; title: string; description: string; order: number }[];
   milestones: Milestone[];
@@ -112,6 +114,8 @@ export default function ManageProjectPage() {
   const [roadmapDescription, setRoadmapDescription] = useState("");
   const [roadmapOrder, setRoadmapOrder] = useState(1);
   const [tokenMint, setTokenMint] = useState("");
+  const [treasuryWallet, setTreasuryWallet] = useState("");
+  const [treasuryChain, setTreasuryChain] = useState<"devnet" | "mainnet">("devnet");
   const [githubStatus, setGithubStatus] = useState<any>(null);
   const [githubRepo, setGithubRepo] = useState("");
   const [githubChallenge, setGithubChallenge] = useState<any>(null);
@@ -130,6 +134,8 @@ export default function ManageProjectPage() {
       const loaded = await apiFetch<ManagedProject>(`/api/projects/${projectId}/manage/`);
       setProject(loaded);
       setTokenMint(loaded.token_mint ?? "");
+      setTreasuryWallet(loaded.treasury_wallet ?? "");
+      setTreasuryChain(loaded.treasury_chain ?? "devnet");
       apiFetch<any>(`/api/integrations/github/${projectId}/`)
         .then(setGithubStatus)
         .catch(() => setGithubStatus(null));
@@ -320,6 +326,47 @@ export default function ManageProjectPage() {
             Save mint
           </button>
         </form>
+
+        <div className="border-t border-neutral-200 pt-4">
+          <h3 className="font-medium">Declared treasury wallet</h3>
+          <p className="mt-1 text-sm text-neutral-600">
+            Read-only. This does not prove ownership or move funds.
+          </p>
+          <form
+            className="mt-2 flex flex-wrap gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void run(async () => {
+                await apiFetch(`/api/projects/${project.id}/treasury/`, {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    treasury_wallet: treasuryWallet,
+                    treasury_chain: treasuryChain,
+                  }),
+                });
+                setMessage("Declared treasury wallet saved.");
+              });
+            }}
+          >
+            <input
+              value={treasuryWallet}
+              onChange={(event) => setTreasuryWallet(event.target.value)}
+              placeholder="Treasury wallet (optional)"
+              className="min-w-72 flex-1 rounded border border-neutral-300 px-3 py-2 font-mono text-sm"
+            />
+            <select
+              value={treasuryChain}
+              onChange={(event) => setTreasuryChain(event.target.value as "devnet" | "mainnet")}
+              className="rounded border border-neutral-300 px-2 py-2 text-sm"
+            >
+              <option value="devnet">Devnet</option>
+              <option value="mainnet">Mainnet</option>
+            </select>
+            <button className="rounded bg-neutral-900 px-3 py-2 text-sm text-white" type="submit">
+              Save treasury
+            </button>
+          </form>
+        </div>
 
         <div className="border-t border-neutral-200 pt-4">
           <h3 className="font-medium">GitHub repository proof</h3>

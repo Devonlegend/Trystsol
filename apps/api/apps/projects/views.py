@@ -12,6 +12,7 @@ from .serializers import (
     FounderProfileSerializer,
     ProjectCreateSerializer,
     ProjectDecisionSerializer,
+    ProjectTreasurySerializer,
     TokenMintSerializer,
 )
 
@@ -28,6 +29,8 @@ def _project_summary(project: Project) -> dict:
         "lifecycle_status": project.lifecycle_status,
         "data_origin": project.data_origin,
         "token_mint": project.token_mint,
+        "treasury_wallet": project.treasury_wallet,
+        "treasury_chain": project.treasury_chain,
         "founder": {
             "id": project.founder_id,
             "display_name": project.founder.display_name,
@@ -259,3 +262,74 @@ class ProjectTokenView(APIView):
             metadata={"token_mint": project.token_mint},
         )
         return Response({"id": project.id, "token_mint": project.token_mint})
+
+
+class ProjectTreasuryUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, project_id):
+        project = get_object_or_404(Project, pk=project_id)
+        if project.founder_id != request.user.id and not request.user.is_admin:
+            return Response(
+                {"error": {"code": "forbidden", "message": "Not allowed."}},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = ProjectTreasurySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        project.treasury_wallet = serializer.validated_data["treasury_wallet"]
+        project.treasury_chain = serializer.validated_data["treasury_chain"]
+        project.save(update_fields=["treasury_wallet", "treasury_chain", "updated_at"])
+        from apps.common.models import AuditLog
+
+        AuditLog.objects.create(
+            actor=request.user,
+            action="project.treasury_updated",
+            object_type="project",
+            object_id=str(project.id),
+            metadata={
+                "treasury_wallet": project.treasury_wallet,
+                "treasury_chain": project.treasury_chain,
+            },
+        )
+        return Response(
+            {
+                "id": project.id,
+                "treasury_wallet": project.treasury_wallet,
+                "treasury_chain": project.treasury_chain,
+            }
+        )
+
+
+class ProjectTreasuryView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, slug):
+        project = get_object_or_404(Project, slug=slug)
+        if project.application_status != ApplicationStatus.APPROVED:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if not project.treasury_wallet:
+            return Response(
+                {
+                    "linked": False,
+                    "notice": "No treasury wallet has been declared for this project.",
+                }
+            )
+        from apps.integrations import treasury
+        from apps.integrations.treasury import TreasuryError
+
+        try:
+            return Response(
+                treasury.get_treasury_snapshot(
+                    project.treasury_wallet, project.treasury_chain
+                )
+            )
+        except TreasuryError as exc:
+            return Response(
+                {
+                    "linked": True,
+                    "wallet": project.treasury_wallet,
+                    "chain": project.treasury_chain,
+                    "error": str(exc),
+                    "caveats": treasury.CAVEATS,
+                }
+            )

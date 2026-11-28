@@ -86,6 +86,7 @@ export default function PublicProjectPage() {
   const [disputeReasons, setDisputeReasons] = useState<Record<string, string>>({});
   const [disputeMessage, setDisputeMessage] = useState<string | null>(null);
   const [automatedSections, setAutomatedSections] = useState<FactSection[]>([]);
+  const [treasury, setTreasury] = useState<any>(null);
 
   const load = useCallback(() => {
     if (!slug) return;
@@ -97,6 +98,9 @@ export default function PublicProjectPage() {
     apiFetch<{ automated_sections: FactSection[] }>(`/api/decision/projects/${slug}/`)
       .then((data) => setAutomatedSections(data.automated_sections))
       .catch(() => setAutomatedSections([]));
+    apiFetch<any>(`/api/treasury/${slug}/`)
+      .then(setTreasury)
+      .catch(() => setTreasury(null));
   }, [slug]);
 
   useEffect(() => {
@@ -170,6 +174,64 @@ export default function PublicProjectPage() {
           </div>
         ) : null}
       </section>
+
+      {treasury ? (
+        <section className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="text-lg font-semibold">Declared treasury wallet</h2>
+          {treasury.linked ? (
+            <div className="mt-2 space-y-2 text-sm">
+              <p className="break-all font-mono text-xs">{treasury.wallet}</p>
+              <p>
+                Balance:{" "}
+                <span className="font-medium">
+                  {typeof treasury.balance_sol === "number"
+                    ? `${treasury.balance_sol.toFixed(4)} SOL`
+                    : "unavailable"}
+                </span>{" "}
+                on {treasury.chain}
+              </p>
+              {treasury.error ? (
+                <p className="text-rose-700">{treasury.error}</p>
+              ) : (
+                <div>
+                  <p className="font-medium">Recent transactions</p>
+                  <ul className="space-y-1 text-xs">
+                    {(treasury.recent_transactions ?? []).map((tx: any) => (
+                      <li key={tx.signature}>
+                        <a
+                          href={`https://explorer.solana.com/tx/${tx.signature}${treasury.chain === "devnet" ? "?cluster=devnet" : ""}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline"
+                        >
+                          {tx.signature.slice(0, 10)}…
+                        </a>{" "}
+                        slot {tx.slot} {tx.err ? "(failed)" : ""}
+                      </li>
+                    ))}
+                    {(treasury.recent_transactions ?? []).length === 0 ? (
+                      <li>No recent transactions returned.</li>
+                    ) : null}
+                  </ul>
+                </div>
+              )}
+              <p className="text-xs text-neutral-500">
+                Source: {treasury.source}
+                {treasury.fetched_at
+                  ? ` · fetched ${new Date(treasury.fetched_at).toLocaleString()}`
+                  : ""}
+              </p>
+              {(treasury.caveats ?? []).map((caveat: string) => (
+                <p key={caveat} className="text-xs text-neutral-600">
+                  {caveat}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-neutral-600">{treasury.notice}</p>
+          )}
+        </section>
+      ) : null}
 
       <section className="space-y-3">
         <div>

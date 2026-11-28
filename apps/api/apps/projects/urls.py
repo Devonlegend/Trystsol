@@ -14,4 +14,6 @@ urlpatterns = [
     path("founders/projects/", views.FounderProjectListView.as_view(), name="founder-projects"),
     path("projects/<uuid:project_id>/manage/", views.ManageProjectView.as_view(), name="manage"),
     path("projects/<uuid:project_id>/token/", views.ProjectTokenView.as_view(), name="token"),
+    path("projects/<uuid:project_id>/treasury/", views.ProjectTreasuryUpdateView.as_view(), name="treasury-update"),
+    path("treasury/<slug:slug>/", views.ProjectTreasuryView.as_view(), name="treasury"),
 ]

@@ -12,7 +12,7 @@ from rest_framework.test import APIClient
 from apps.accounts.models import User, UserRole, Wallet
 from apps.accounts.siws import base58encode
 from apps.decision_pages import services as decision_services
-from apps.integrations import github, jupiter, rpc_facts, services as integration_services
+from apps.integrations import github, jupiter, rpc_facts, services as integration_services, treasury
 from apps.integrations.models import GitHubAccount, GitHubProofChallenge, TokenCache
 from apps.milestones.models import Milestone, MilestoneStatus
 from apps.passport.services import builder_passport
@@ -297,6 +297,62 @@ class PassportTests(IntegrationTestCase):
         self.assertEqual(passport["verified_milestones"], 1)
         self.assertEqual(passport["entries"][0]["milestone"]["title"], "Verified")
         self.assertIn("No score", passport["notice"])
+
+
+class TreasuryTests(IntegrationTestCase):
+    def test_snapshot_is_read_only_and_caveated(self):
+        def fake_rpc(url, method, params):
+            if method == "getBalance":
+                return {"value": 1_500_000_000}
+            if method == "getSignaturesForAddress":
+                return [{"signature": "sig1", "slot": 10, "blockTime": 1700000000, "err": None}]
+            raise AssertionError(method)
+
+        with patch.object(treasury, "_rpc", side_effect=fake_rpc):
+            snapshot = treasury.get_treasury_snapshot(self.address, "devnet")
+        self.assertEqual(snapshot["balance_sol"], 1.5)
+        self.assertEqual(snapshot["recent_transactions"][0]["signature"], "sig1")
+        self.assertIn("never holds", " ".join(snapshot["caveats"]))
+
+    def test_treasury_update_and_public_view(self):
+        outsider = User.objects.create_user(role=UserRole.FOUNDER)
+        client = APIClient()
+        client.force_authenticate(user=outsider)
+        denied = client.patch(
+            f"/api/projects/{self.project.id}/treasury/",
+            {"treasury_wallet": self.address, "treasury_chain": "devnet"},
+            format="json",
+        )
+        self.assertEqual(denied.status_code, 403)
+
+        client.force_authenticate(user=self.founder)
+        accepted = client.patch(
+            f"/api/projects/{self.project.id}/treasury/",
+            {"treasury_wallet": self.address, "treasury_chain": "devnet"},
+            format="json",
+        )
+        self.assertEqual(accepted.status_code, 200, accepted.content)
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.treasury_wallet, self.address)
+
+        with patch.object(
+            treasury,
+            "get_treasury_snapshot",
+            return_value={"linked": True, "wallet": self.address, "balance_sol": 2.0},
+        ):
+            public = APIClient().get("/api/treasury/orbit/")
+        self.assertEqual(public.status_code, 200)
+        self.assertEqual(public.json()["balance_sol"], 2.0)
+
+    def test_invalid_treasury_wallet_is_rejected(self):
+        client = APIClient()
+        client.force_authenticate(user=self.founder)
+        response = client.patch(
+            f"/api/projects/{self.project.id}/treasury/",
+            {"treasury_wallet": "javascript:alert(1)", "treasury_chain": "devnet"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
 
 
 @override_settings(**TEST_SETTINGS)
