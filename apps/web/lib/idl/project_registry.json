@@ -1,0 +1,1901 @@
+{
+  "address": "CThoKseeGQf6wN4jVADhLm549Nw89rsNL8p684iTK8BB",
+  "metadata": {
+    "name": "project_registry",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "accept_authority_transfer",
+      "discriminator": [
+        239,
+        248,
+        177,
+        2,
+        206,
+        97,
+        46,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "pending_authority",
+          "signer": true
+        },
+        {
+          "name": "project",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "accept_registry_admin",
+      "discriminator": [
+        160,
+        39,
+        133,
+        143,
+        76,
+        44,
+        46,
+        233
+      ],
+      "accounts": [
+        {
+          "name": "pending_admin",
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "add_reviewer",
+      "discriminator": [
+        180,
+        36,
+        49,
+        191,
+        161,
+        76,
+        23,
+        133
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reviewer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  105,
+                  101,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry"
+              },
+              {
+                "kind": "arg",
+                "path": "wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "assign_reviewers",
+      "discriminator": [
+        68,
+        220,
+        128,
+        206,
+        189,
+        158,
+        26,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "reviewers",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "required_approvals",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "create_milestone",
+      "discriminator": [
+        239,
+        58,
+        201,
+        28,
+        40,
+        186,
+        173,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "project"
+          ]
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "criteria_template",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105,
+                  116,
+                  101,
+                  114,
+                  105,
+                  97
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "criteria_template_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "criteria_template_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "deactivate_reviewer",
+      "discriminator": [
+        1,
+        217,
+        208,
+        51,
+        168,
+        146,
+        27,
+        30
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reviewer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  105,
+                  101,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry"
+              },
+              {
+                "kind": "arg",
+                "path": "wallet"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "expire_round",
+      "discriminator": [
+        238,
+        222,
+        71,
+        141,
+        104,
+        222,
+        76,
+        248
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize_registry",
+      "discriminator": [
+        189,
+        181,
+        20,
+        17,
+        174,
+        57,
+        249,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "propose_authority_transfer",
+      "discriminator": [
+        57,
+        206,
+        225,
+        129,
+        35,
+        111,
+        174,
+        145
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "project"
+          ]
+        },
+        {
+          "name": "project",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "propose_registry_admin",
+      "discriminator": [
+        172,
+        92,
+        244,
+        165,
+        53,
+        27,
+        19,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "publish_criteria_template",
+      "discriminator": [
+        215,
+        255,
+        36,
+        203,
+        241,
+        4,
+        96,
+        97
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "criteria_template",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105,
+                  116,
+                  101,
+                  114,
+                  105,
+                  97
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "template_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "template_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "version",
+          "type": "u16"
+        },
+        {
+          "name": "criteria_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "criteria_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "register_project",
+      "discriminator": [
+        130,
+        150,
+        121,
+        216,
+        183,
+        225,
+        243,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "docs": [
+            "The admin registers an approved project; the founder becomes the authority."
+          ],
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "project",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "project_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "project_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "metadata_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        },
+        {
+          "name": "founder",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "reject_milestone",
+      "discriminator": [
+        243,
+        48,
+        66,
+        165,
+        237,
+        41,
+        116,
+        249
+      ],
+      "accounts": [
+        {
+          "name": "reviewer_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reviewer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  105,
+                  101,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry"
+              },
+              {
+                "kind": "account",
+                "path": "reviewer_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verification",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              },
+              {
+                "kind": "account",
+                "path": "milestone.round",
+                "account": "Milestone"
+              },
+              {
+                "kind": "account",
+                "path": "reviewer_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit_milestone",
+      "discriminator": [
+        35,
+        96,
+        220,
+        215,
+        102,
+        83,
+        139,
+        52
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "project"
+          ]
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "evidence_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "evidence_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_project_metadata",
+      "discriminator": [
+        72,
+        164,
+        85,
+        54,
+        239,
+        148,
+        18,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "project"
+          ]
+        },
+        {
+          "name": "project",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "metadata_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_project_status",
+      "discriminator": [
+        50,
+        46,
+        252,
+        160,
+        79,
+        221,
+        5,
+        68
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "registry"
+          ]
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "project",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "lifecycle_status",
+          "type": {
+            "defined": {
+              "name": "LifecycleStatus"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "verify_milestone",
+      "discriminator": [
+        33,
+        124,
+        38,
+        194,
+        150,
+        153,
+        90,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "reviewer_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reviewer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  105,
+                  101,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry"
+              },
+              {
+                "kind": "account",
+                "path": "reviewer_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "project"
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "project"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verification",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              },
+              {
+                "kind": "account",
+                "path": "milestone.round",
+                "account": "Milestone"
+              },
+              {
+                "kind": "account",
+                "path": "reviewer_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CriteriaTemplate",
+      "discriminator": [
+        87,
+        123,
+        251,
+        134,
+        233,
+        81,
+        243,
+        58
+      ]
+    },
+    {
+      "name": "Milestone",
+      "discriminator": [
+        38,
+        210,
+        239,
+        177,
+        85,
+        184,
+        10,
+        44
+      ]
+    },
+    {
+      "name": "Project",
+      "discriminator": [
+        205,
+        168,
+        189,
+        202,
+        181,
+        247,
+        142,
+        19
+      ]
+    },
+    {
+      "name": "Registry",
+      "discriminator": [
+        47,
+        174,
+        110,
+        246,
+        184,
+        182,
+        252,
+        218
+      ]
+    },
+    {
+      "name": "Reviewer",
+      "discriminator": [
+        130,
+        144,
+        184,
+        246,
+        190,
+        126,
+        132,
+        89
+      ]
+    },
+    {
+      "name": "Verification",
+      "discriminator": [
+        230,
+        33,
+        140,
+        88,
+        132,
+        240,
+        116,
+        178
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "UnauthorizedAdmin",
+      "msg": "Only the registry admin may perform this action."
+    },
+    {
+      "code": 6001,
+      "name": "UriEmpty",
+      "msg": "URI must not be empty."
+    },
+    {
+      "code": 6002,
+      "name": "UriTooLong",
+      "msg": "URI exceeds the maximum length of 128 bytes."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidReviewerCount",
+      "msg": "Between 1 and 5 reviewers are required."
+    },
+    {
+      "code": 6004,
+      "name": "DuplicateReviewer",
+      "msg": "Duplicate reviewer in the assignment list."
+    },
+    {
+      "code": 6005,
+      "name": "InvalidApprovals",
+      "msg": "Required approvals must be between 1 and the reviewer count."
+    },
+    {
+      "code": 6006,
+      "name": "ReviewerInactive",
+      "msg": "Reviewer is not active."
+    },
+    {
+      "code": 6007,
+      "name": "ReviewerNotAssigned",
+      "msg": "Reviewer is not assigned to this milestone."
+    },
+    {
+      "code": 6008,
+      "name": "AuthorityCannotReview",
+      "msg": "A project authority cannot review its own milestone."
+    },
+    {
+      "code": 6009,
+      "name": "InvalidMilestoneStatus",
+      "msg": "Milestone is not in a valid state for this action."
+    },
+    {
+      "code": 6010,
+      "name": "RoundOverflow",
+      "msg": "Round counter overflow."
+    },
+    {
+      "code": 6011,
+      "name": "ReviewersNotAssigned",
+      "msg": "Reviewers must be assigned before submission."
+    },
+    {
+      "code": 6012,
+      "name": "ReviewerMismatch",
+      "msg": "Reviewer account does not match the signer or the registry."
+    },
+    {
+      "code": 6013,
+      "name": "SchemaMismatch",
+      "msg": "Registry schema version mismatch."
+    },
+    {
+      "code": 6014,
+      "name": "InvalidIdentifier",
+      "msg": "Project or milestone ID must not be all zeroes."
+    },
+    {
+      "code": 6015,
+      "name": "ProjectNotActive",
+      "msg": "Project is not active."
+    },
+    {
+      "code": 6016,
+      "name": "MissingHash",
+      "msg": "Evidence or criteria hash is missing."
+    },
+    {
+      "code": 6017,
+      "name": "InvalidCriteria",
+      "msg": "Criteria template is invalid or inactive."
+    },
+    {
+      "code": 6018,
+      "name": "ReassignmentLocked",
+      "msg": "Reviewer assignment cannot change after a verdict in this round."
+    },
+    {
+      "code": 6019,
+      "name": "InvalidRoundState",
+      "msg": "Milestone is not in a state that can be expired."
+    },
+    {
+      "code": 6020,
+      "name": "ReviewerAlreadyInactive",
+      "msg": "Reviewer is already inactive."
+    },
+    {
+      "code": 6021,
+      "name": "NoPendingAuthority",
+      "msg": "No pending authority transfer exists for this signer."
+    },
+    {
+      "code": 6022,
+      "name": "NoPendingAdmin",
+      "msg": "No pending registry admin transfer exists for this signer."
+    }
+  ],
+  "types": [
+    {
+      "name": "CriteriaTemplate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "template_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "version",
+            "type": "u16"
+          },
+          {
+            "name": "criteria_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "criteria_uri",
+            "type": "string"
+          },
+          {
+            "name": "published_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Decision",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Verify"
+          },
+          {
+            "name": "Reject"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LifecycleStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Completed"
+          },
+          {
+            "name": "Suspended"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Milestone",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "project",
+            "type": "pubkey"
+          },
+          {
+            "name": "milestone_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "round",
+            "type": "u16"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "evidence_uri",
+            "type": "string"
+          },
+          {
+            "name": "criteria_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "criteria_uri",
+            "type": "string"
+          },
+          {
+            "name": "criteria_template_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "criteria_version",
+            "type": "u16"
+          },
+          {
+            "name": "assigned_reviewers",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "required_approvals",
+            "type": "u8"
+          },
+          {
+            "name": "approvals",
+            "type": "u8"
+          },
+          {
+            "name": "rejections",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "MilestoneStatus"
+              }
+            }
+          },
+          {
+            "name": "submitted_at",
+            "type": "i64"
+          },
+          {
+            "name": "finalized_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Submitted"
+          },
+          {
+            "name": "UnderReview"
+          },
+          {
+            "name": "Verified"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "metadata_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "metadata_uri",
+            "type": "string"
+          },
+          {
+            "name": "lifecycle_status",
+            "type": {
+              "defined": {
+                "name": "LifecycleStatus"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Registry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_admin",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "reviewer_count",
+            "type": "u16"
+          },
+          {
+            "name": "schema_version",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reviewer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "added_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Verification",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "round",
+            "type": "u16"
+          },
+          {
+            "name": "reviewer",
+            "type": "pubkey"
+          },
+          {
+            "name": "decision",
+            "type": {
+              "defined": {
+                "name": "Decision"
+              }
+            }
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "criteria_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
